@@ -43,8 +43,8 @@ Dev started: 17 November 2004
 1. First version
 '''
 
-__version__ = 3
-__date__ = '20051129'
+__version__ = 4
+__date__ = '20121018'
 
 def parse(filename):
     return TextBase(open(filename))
@@ -77,10 +77,12 @@ class TextBase:
         lastField = ''
         datadict = {}
         for x in chunk:
-            if x[0] == '#': continue
+            if x[0] == '#':
+                continue
             spacepos = x.find(' ')
-            if spacepos == -1: continue
-            if x[0] <> ';' and spacepos > 0:
+            if spacepos == -1:
+                continue
+            if x[0] != ';' and spacepos > 0:
                 lastField = x[0:spacepos]
                 if lastField.endswith(':'):
                     lastField = lastField[:-1]
@@ -108,7 +110,17 @@ class TextBase:
                     chunk = []
             else:
                 chunk.append(line)
-        if chunk: self.process(chunk)
+        if chunk:
+            self.process(chunk)
+
+    def dump(self, filename):
+        with open(filename, 'w') as F:
+            for x in self.__entries__:
+                for k, v in x.items():
+                    F.write('\n%s ' % k.encode('utf8'))
+                    tmp = u'\n; '.join(v)
+                    F.write(tmp.encode('utf8'))
+                F.write('\n$')
 
     def __getitem__(self, key):
         return self.__entries__[key]
