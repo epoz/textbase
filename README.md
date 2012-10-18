@@ -21,7 +21,7 @@ or the Textbase object can be index-addressed like a list.
 
 Example Usage:
 --------------
-
+```python
 import textbase
 t = textbase.TextBase(somebuf)
 
@@ -31,11 +31,14 @@ for x in t[10:20]:
     print x.keys()
 
 print t[0]
-
+```
 
 If you do not want the records parsed into Python dictionaries and just want 
 to muck about with the records as text blobs, initialise like this:
+
+```python
   t = textbase.TextBase(somebuf, parse=False)
+```
 
 Author: Etienne Posthumus
 Mail: ep@epoz.org
