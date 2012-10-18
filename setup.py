@@ -4,7 +4,7 @@ setup(name="TextBase",
       version="0.1",
       description="TextBase library to manipulate DBText style data files.",
       author="Etienne Posthumus",
-      author_email="etienne@mnemosyne.org",
-      url="http://www.mnemosyne.org/textbase/",
+      author_email="ep@epoz.org",
+      url="https://github.com/epoz/textbase/",
       py_modules = ["textbase",]
       )
