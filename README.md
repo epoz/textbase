@@ -9,6 +9,19 @@ For each record the fieldname is the first word on the line, usually in upper ca
 Repeating values in a list for the fieldname can be specified on consecutive 
 lines using a semicolon. If the text value for a field is very long and needs to wrap, start the line with one (or more) spaces.
 
+Example File:
+-------------
+
+```
+FOO A Foo field
+BAR A Baz field with mulitple entries
+; Another
+; and yet even more
+$
+FOO This is the FOO field for the next record
+BAR Nothing
+```
+
 The main utitlity class is TextBase.
 It can be initialised with an open file, or a string buffer, named sourcefile.
 Sourcefile is iterated over, splitting the contents into chunks.
