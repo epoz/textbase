@@ -9,6 +9,15 @@ For each record the fieldname is the first word on the line, usually in upper ca
 Repeating values in a list for the fieldname can be specified on consecutive 
 lines using a semicolon. If the text value for a field is very long and needs to wrap, start the line with one (or more) spaces.
 
+Why did you re-invent the wheel?
+--------------------------------
+
+We already have CSV files, or JSON files, or YAML, why did you make this?
+Well, I didn't invent this. It is actually a format used by a suite of software from InMagic:
+http://www.inmagic.com/products/dbtext-library-suite/
+
+We used the dbText software to create a boatload of data files since the early eighties, which is a LONG time ago in Internet-land. Those exact same data files are still used to drive a lot of software, and has proven to be remarkably useful over the years. Think of it as Markdown vs HTML, or as a simpler dataformat with über-simple Key:Value records that are human readable.
+
 Example File:
 -------------
 
