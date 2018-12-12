@@ -1,6 +1,6 @@
 import textbase
 
-example = '''# Here is a comment
+example = b"""# Here is a comment
 NAME John Doe
 DOB 19720601
 COLOURS red
