@@ -54,19 +54,22 @@ class TextBase:
         self.__entries__ = []
         self.keep_original = keep_original
         self.encoding = encoding
+
         if isinstance(sourcefile, io.IOBase):
             self.sourcefile = sourcefile
         else:
-            from io import BytesIO
-            self.sourcefile = BytesIO(sourcefile)
+            self.sourcefile = io.BytesIO(sourcefile)
 
         if parse:
             self.process = self.parse
         else:
             self.process = self.dontparse
+
+        # check for unicode Byte Order Mark (BOM)
         BOMcheck = self.sourcefile.read(3)
         if BOMcheck != '\xef\xbb\xbf':
             self.sourcefile.seek(0)
+
         self.split()
 
     def dontparse(self, chunk):
@@ -76,15 +79,22 @@ class TextBase:
         lastField = ''
         datadict = OrderedDict()
         for x in chunk:
-            if x[0] == '#':
+            if x[0] == '#':  # skip comments
                 continue
+
+            # find where the first space character is
             spacepos = x.find(' ')
+
+            # skip line if there are no spaces
             if spacepos == -1:
                 continue
+
+            # Get key value
             if x[0] != ';' and spacepos > 0:
                 lastField = x[0:spacepos]
                 if lastField.endswith(':'):
                     lastField = lastField[:-1]
+
             data = x[spacepos:].strip()
             if lastField in datadict.keys():
                 if spacepos == 0:
@@ -93,8 +103,10 @@ class TextBase:
                     datadict[lastField].append(data)
             else:
                 datadict[lastField] = [data]
+
         if self.keep_original:
             datadict['__original__'] = (''.join(chunk))
+
         if datadict:
             self.__entries__.append(datadict)
 
