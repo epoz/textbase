@@ -96,6 +96,13 @@ class TextBase:
                     lastField = lastField[:-1]
 
             data = x[spacepos:].strip()
+
+            # Special case multi-line values
+            # The string <space><newline> is part of a multiline string but the
+            # way we pull data out typically strips newlines so fix that here.
+            if x[spacepos:] == " \n":
+                data = "\n\n"
+
             if lastField in datadict.keys():
                 if spacepos == 0:
                     datadict[lastField][-1] = datadict[lastField][-1] + ' ' + data
