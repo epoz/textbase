@@ -1,4 +1,4 @@
-'''
+"""
 textbase - A Python library to manipulate Inmagic/DBText style data files
 
 The main utitlity class is TextBase.
@@ -33,37 +33,41 @@ Please send me feedback if this is useful for you, or suggestions etc.
 Author: Etienne Posthumus
 Mail: ep@epoz.org
 Dev started: 17 November 2004
-'''
+"""
 
 __version__ = "0.10"
 __date__ = '20180726'
 
-
 import io
 from collections import OrderedDict
+from typing import Callable, List, Union
 
 
-def parse(filename):
+def parse(filename: str):
     # Files read as binary, we do explicit decoding at the boundary,
     return TextBase(io.open(filename, 'rb'))
 
 
 class TextBase:
-    def __init__(self, sourcefile=None, separator=b'$', parse=True, keep_original=False, encoding='utf8'):
+    def __init__(self, sourcefile: bytes = None, separator=b'$',
+                 do_parse=True, keep_original=False, encoding='utf8') -> None:
+
         self.separator = separator
-        self.__entries__ = []
+        self.__entries__: List[Union[str, OrderedDict[str, Union[str, List[str]]]]] = []
         self.keep_original = keep_original
         self.encoding = encoding
+        self.sourcefile: bytes
+        self.process: Callable[[List[str]], None]
 
         if isinstance(sourcefile, io.IOBase):
             self.sourcefile = sourcefile
         else:
             self.sourcefile = io.BytesIO(sourcefile)
 
-        if parse:
+        if do_parse:
             self.process = self.parse
         else:
-            self.process = self.dontparse
+            self.process = self.dont_parse
 
         # check for unicode Byte Order Mark (BOM)
         BOMcheck = self.sourcefile.read(3)
@@ -72,12 +76,13 @@ class TextBase:
 
         self.split()
 
-    def dontparse(self, chunk):
+    def dont_parse(self, chunk: List[str]) -> None:
         self.__entries__.append(''.join(chunk))
 
-    def parse(self, chunk):
-        lastField = ''
-        datadict = OrderedDict()
+    def parse(self, chunk: List[str]) -> None:
+        last_field = ''
+        datadict: OrderedDict[str, Union[str, List[str]]] = OrderedDict()
+
         for x in chunk:
             if x[0] == '#':  # skip comments
                 continue
@@ -91,11 +96,11 @@ class TextBase:
 
             # Get key value
             if x[0] != ';' and spacepos > 0:
-                lastField = x[0:spacepos]
-                if lastField.endswith(':'):
-                    lastField = lastField[:-1]
+                last_field = x[0:spacepos]
+                if last_field.endswith(':'):
+                    last_field = last_field[:-1]
 
-            data = x[spacepos:].strip()
+            data: str = x[spacepos:].strip()
 
             # Special case multi-line values
             # The string <space><newline> is part of a multiline string but the
@@ -103,22 +108,23 @@ class TextBase:
             if x[spacepos:] == " \n":
                 data = "\n\n"
 
-            if lastField in datadict.keys():
+            if last_field in datadict.keys():
                 if spacepos == 0:
-                    datadict[lastField][-1] = datadict[lastField][-1] + ' ' + data
+                    datadict[last_field][-1] += ' ' + data
                 else:
-                    datadict[lastField].append(data)
+                    datadict[last_field].append(data)
             else:
-                datadict[lastField] = [data]
+                datadict[last_field] = [data]
 
         if self.keep_original:
-            datadict['__original__'] = (''.join(chunk))
+            datadict['__original__'] = ''.join(chunk)
 
         if datadict:
             self.__entries__.append(datadict)
 
-    def split(self):
-        chunk = []
+    def split(self) -> None:
+        chunk: List[str] = []
+
         for line in self.sourcefile:
             if line.strip() == self.separator:
                 if chunk:
@@ -128,10 +134,11 @@ class TextBase:
                 # this is the boundary that an actual read line gets "into" the system
                 # we will do an explicit decoding here.
                 chunk.append(line.decode(self.encoding))
+
         if chunk:
             self.process(chunk)
 
-    def dump(self, filename):
+    def dump(self, filename: str) -> None:
         with io.open(filename, 'wb') as F:
             for x in self.__entries__:
                 for k, v in x.items():

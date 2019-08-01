@@ -6,5 +6,5 @@ setup(name="TextBase",
       author="Etienne Posthumus",
       author_email="ep@epoz.org",
       url="https://github.com/epoz/textbase/",
-      py_modules = ["textbase",]
+      py_modules=["textbase", ]
       )
